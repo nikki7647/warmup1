@@ -60,6 +60,58 @@ class UsersController < ApplicationController
       format.json { head :no_content }
     end
   end
+  #=================================warm up 1=====================================
+  #POST /users/login
+  def add
+	if params[:user] == '' or params[:user].length > 128
+		@result = -3
+	elsif User.find_by_user(params[:user])
+		@result = -2
+	elsif params[:password].length > 128
+		@result = -4
+	else
+		@new = User.create(:user => params[:user], :password => params[:password], :count => 1)
+		@result = 1
+	end
+	
+	if @result >= 1
+		render :json => { 'errCode' => 1, 'count' => @result }
+	else
+		render :json => { 'errCode' => @result }
+	end
+	
+  end
+  
+  #POST /users/add
+  def login
+	@user = User.find_by_user(params[:user])
+	if not @user
+		@result = -1
+	elsif not @user.password == params[:password]
+		@result = -1
+	else
+		@user.count = @user.count + 1
+		@user.save
+		@result = @user.count
+	end
+	
+	if @result >= 1
+		render :json => { 'errCode' => 1, 'count' => @result }
+	else
+		render :json => { 'errCode' => @result }
+	end
+  end
+  
+  #POST /TESTAPI/resetFixture
+  def resetFixture
+	User.delete_all
+	render :json => { 'errCode' => 1}
+  end
+  
+  #POST /TESTAPI/unitTests
+  def unitTests
+  end
+  #================================================================================
 
   private
     # Use callbacks to share common setup or constraints between actions.

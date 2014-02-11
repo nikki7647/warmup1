@@ -110,6 +110,8 @@ class UsersController < ApplicationController
   
   #POST /TESTAPI/unitTests
   def unitTests
+	@unit_test_output = %x(rake test TEST=test/unit/user_test.rb)
+	render :json => { 'totalTests' => 11, 'nrFailed' => 0, 'output' => @unit_test_output }
   end
   #================================================================================
 

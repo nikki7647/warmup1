@@ -26,7 +26,7 @@ class EmptyPasswordTest(testLib.RestTestCase):
 class OverSizedUsernameTest(testLib.RestTestCase):
     def testUnit(self):
         req1 = self.makeRequest("/users/add", method="POST", data={'user':'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'password':'asdf'})
-        self.assertEquals(req1['errCode'],-4)
+        self.assertEquals(req1['errCode'],-3)
         
 class EmptyUsernameTest(testLib.RestTestCase):
     def testUnit(self):
@@ -41,13 +41,13 @@ class LoginTest(testLib.RestTestCase):
 
 class WrongUsernameLoginTest(testLib.RestTestCase):
     def testUnit(self):
-        req1 = self.makeRequest("/users/add", method="POST", data={'user':'2', 'password':'asdf})
+        req1 = self.makeRequest("/users/add", method="POST", data={'user':'2', 'password':'asdf'})
         req2 = self.makeRequest("/users/login", method="POST", data={'user':'1', 'password':'asdf'})
         self.assertEquals(req2['errCode'],-1)
                                                                    
 class WrongPasswordLoginTest(testLib.RestTestCase):
     def testUnit(self):
-        req1 = self.makeRequest("/users/add", method="POST", data={'user':'1', 'password':'asdf})
+        req1 = self.makeRequest("/users/add", method="POST", data={'user':'1', 'password':'asdf'})
         req2 = self.makeRequest("/users/login", method="POST", data={'user':'1', 'password':'ghjk'})
         self.assertEquals(req2['errCode'],-1)
 

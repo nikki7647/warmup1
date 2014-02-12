@@ -5,45 +5,94 @@ class UsersControllerTest < ActionController::TestCase
     @user = users(:one)
   end
 
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:users)
+  test "successful add should return 1" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal 1, resp['errCode']
+    User.delete_all
   end
-
-  test "should get new" do
-    get :new
-    assert_response :success
+  
+  test "duplicate add should return -2" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdf'}
+	post :add, {:user => '1', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal -2, resp['errCode']
+    User.delete_all
   end
-
-  test "should create user" do
-    assert_difference('User.count') do
-      post :create, user: { count: @user.count, password: @user.password, user: @user.user }
-    end
-
-    assert_redirected_to user_path(assigns(:user))
+  
+  test "empty password add should return 1" do
+	User.delete_all
+    post :add, {:user => '1', :password => ''}
+    resp = JSON.parse(@response.body)
+	assert_equal 1, resp['errCode']
+    User.delete_all
   end
-
-  test "should show user" do
-    get :show, id: @user
-    assert_response :success
+  
+  test "empty user add should return -3" do
+	User.delete_all
+    post :add, {:user => '', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal -3, resp['errCode']
+    User.delete_all
   end
-
-  test "should get edit" do
-    get :edit, id: @user
-    assert_response :success
+  
+  test "long password add should return -4" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}
+    resp = JSON.parse(@response.body)
+	assert_equal -4, resp['errCode']
+    User.delete_all
   end
-
-  test "should update user" do
-    patch :update, id: @user, user: { count: @user.count, password: @user.password, user: @user.user }
-    assert_redirected_to user_path(assigns(:user))
+  
+  test "long user add should return -3" do
+	User.delete_all
+    post :add, {:user => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal -3, resp['errCode']
+    User.delete_all
   end
-
-  test "should destroy user" do
-    assert_difference('User.count', -1) do
-      delete :destroy, id: @user
-    end
-
-    assert_redirected_to users_path
+  
+  test "successful login should return count = 2" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdf'}
+	post :login, {:user => '1', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal 1, resp['errCode']
+	assert_equal 2, resp['count']
+    User.delete_all
   end
+  
+  test "unfound user login should return -1" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdf'}
+	post :login, {:user => '2', :password => 'asdf'}
+    resp = JSON.parse(@response.body)
+	assert_equal -1, resp['errCode']
+
+    User.delete_all
+  end
+  
+  test "wrong password login should return -1" do
+	User.delete_all
+    post :add, {:user => '1', :password => 'asdf'}
+	post :login, {:user => '2', :password => 'ghjk'}
+    resp = JSON.parse(@response.body)
+	assert_equal -1, resp['errCode']
+
+    User.delete_all
+  end
+  
+  test "reset fixture should return 1" do
+	User.delete_all
+    post :resetFixture
+	
+    resp = JSON.parse(@response.body)
+	assert_equal 1, resp['errCode']
+
+    User.delete_all
+  end
+  
+  
 end

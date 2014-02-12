@@ -110,8 +110,23 @@ class UsersController < ApplicationController
   
   #POST /TESTAPI/unitTests
   def unitTests
-  
-	render :json => { 'totalTests' => 11, 'nrFailed' => 0, 'output' => 'This is a fake response' }
+	@output = %x(rake test TEST=test/controllers/users_controller_test.rb)
+	@results = ''
+    @output.each_line do |li|
+      if (li[/^[0-9]+ tests.*/])
+        @results = li
+        break
+      end
+    end
+    /[0-9]+ tests/ =~ @results
+    /[0-9]+/ =~ Regexp.last_match[0]
+    @total_tests = Regexp.last_match[0].to_i
+    /[0-9]+ failures/ =~ @results
+    /[0-9]+/ =~ Regexp.last_match[0]
+    @failures = Regexp.last_match[0].to_i
+    # @failures = 0
+    render :json => { 'totalTests' => @total_tests, 'nrFailed' => @failures, 'output' => @output }
+	#render :json => { 'totalTests' => 11, 'nrFailed' => 0, 'output' => 'This is a fake response' }
   end
   #================================================================================
 

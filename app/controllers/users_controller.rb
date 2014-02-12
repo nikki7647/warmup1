@@ -111,22 +111,34 @@ class UsersController < ApplicationController
   #POST /TESTAPI/unitTests
   def unitTests
 	#@output = %x(rake test TEST=test/controllers/users_controller_test.rb)
-	@output = %x(ruby -Itest test/controllers/users_controller_test.rb)
-	@results = ''
-    @output.each_line do |li|
-      if (li[/^[0-9]+ tests.*/])
-        @results = li
-        break
-      end
-    end
-    /[0-9]+ tests/ =~ @results
-    /[0-9]+/ =~ Regexp.last_match[0]
-    @total_tests = Regexp.last_match[0].to_i
-    /[0-9]+ failures/ =~ @results
-    /[0-9]+/ =~ Regexp.last_match[0]
-    @failures = Regexp.last_match[0].to_i
+	#@output = %x(ruby -Itest test/controllers/users_controller_test.rb)
+	#@results = ''
+    #@output.each_line do |li|
+    #  if (li[/^[0-9]+ tests.*/])
+    #    @results = li
+    #    break
+    #  end
+    #end
+    #/[0-9]+ tests/ =~ @results
+    #/[0-9]+/ =~ Regexp.last_match[0]
+    #@total_tests = Regexp.last_match[0].to_i
+    #/[0-9]+ failures/ =~ @results
+    #/[0-9]+/ =~ Regexp.last_match[0]
+    #@failures = Regexp.last_match[0].to_i
     # @failures = 0
-    render :json => { 'totalTests' => @total_tests, 'nrFailed' => @failures, 'output' => @output }
+    #render :json => { 'totalTests' => @total_tests, 'nrFailed' => @failures, 'output' => @output }
+	output = `ruby -Itest test/controllers/users_controller_test.rb`
+    outputLines = output.split(/\n/)
+    lastLine = ""
+    outputLines.each do |line|
+		if line.include?("tests") && line.include?("assertions") && line.include?("failures") && line.include?("errors") && line.include?("skips")
+            lastLine = line
+        end
+    end
+    testInfo = lastLine.split(",")
+    totalTests = Integer(testInfo[0].gsub(" tests",""))
+    nrFailed = Integer(testInfo[2].gsub(" failures",""))
+    render :json => { "totalTests" => totalTests, "nrFailed" => nrFailed, "output" => output }	
 	#render :json => { 'totalTests' => 10, 'nrFailed' => 0, 'output' => 'This is a fake response' }
   end
   #================================================================================

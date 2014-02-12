@@ -110,7 +110,8 @@ class UsersController < ApplicationController
   
   #POST /TESTAPI/unitTests
   def unitTests
-	@output = %x(rake test TEST=test/controllers/users_controller_test.rb)
+	#@output = %x(rake test TEST=test/controllers/users_controller_test.rb)
+	@output = %x(ruby -Itest test/controllers/users_controller_test.rb)
 	@results = ''
     @output.each_line do |li|
       if (li[/^[0-9]+ tests.*/])
@@ -126,7 +127,7 @@ class UsersController < ApplicationController
     @failures = Regexp.last_match[0].to_i
     # @failures = 0
     render :json => { 'totalTests' => @total_tests, 'nrFailed' => @failures, 'output' => @output }
-	#render :json => { 'totalTests' => 11, 'nrFailed' => 0, 'output' => 'This is a fake response' }
+	#render :json => { 'totalTests' => 10, 'nrFailed' => 0, 'output' => 'This is a fake response' }
   end
   #================================================================================
 

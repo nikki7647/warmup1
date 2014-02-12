@@ -110,7 +110,7 @@ class UsersController < ApplicationController
   
   #POST /TESTAPI/unitTests
   def unitTests
-	@unit_test_output = %x(ruby -Itest test/unit/user_test.rb)
+	@unit_test_output = %x(ruby -Itest test/unit/unit_test.rb)
 	@results = ''
     @unit_test_output.each_line do |li|
       if (li[/^[0-9]+ tests.*/])

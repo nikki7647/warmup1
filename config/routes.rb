@@ -2,7 +2,7 @@ Warmup1::Application.routes.draw do
 	match 'users/login'=> 'users#login', :via => [:post]
 	match 'users/add' => 'users#add', :via => [:post]
 	match 'TESTAPI/resetFixture/' => 'users#resetFixture', :via => [:post]
-	match 'TESTAPI/unitTests/' => 'user#unitTests', :via => [:post]
+	match 'TESTAPI/unitTests/' => 'users#unitTests', :via => [:post]
 	resources :users
 
   # The priority is based upon order of creation: first created -> highest priority.

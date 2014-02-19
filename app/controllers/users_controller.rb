@@ -85,7 +85,9 @@ class UsersController < ApplicationController
   #POST /users/add
   def login
 	@user = User.find_by_user(params[:user])
-	if not @user
+	if params[:user] == '' or params[:user].length > 128
+		@result = -3
+	elsif not @user
 		@result = -1
 	elsif not @user.password == params[:password]
 		@result = -1
